@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: sandbox-comparison
+Version: 0.1.0
+Summary: Provider-agnostic benchmarking for AI code-execution sandboxes.
+Requires-Python: >=3.11
+Requires-Dist: e2b<3.0,>=2.0
+Requires-Dist: hf-sandbox>=0.1
+Requires-Dist: huggingface_hub>=1.19
+Requires-Dist: docker>=7.0
+Requires-Dist: httpx>=0.27
+Requires-Dist: python-dotenv>=1.0
+Requires-Dist: matplotlib>=3.8
+Requires-Dist: rich>=13.0

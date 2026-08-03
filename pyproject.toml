@@ -1,0 +1,19 @@
+[project]
+name = "sandbox-comparison"
+version = "0.1.0"
+description = "Provider-agnostic benchmarking for AI code-execution sandboxes."
+requires-python = ">=3.11"
+dependencies = [
+  "e2b>=2.0,<3.0",
+  "hf-sandbox>=0.1",
+  "huggingface_hub>=1.19",
+  "docker>=7.0",
+  "httpx>=0.27",
+  "python-dotenv>=1.0",
+  "matplotlib>=3.8",
+  "rich>=13.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["adapters*", "benchmarks*"]
