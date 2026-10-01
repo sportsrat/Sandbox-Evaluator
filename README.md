@@ -117,6 +117,8 @@ python scripts/plot_results.py
 python scripts/summarize.py
 python scripts/build_html_report.py
 ```
+<img width="1171" height="842" alt="image" src="https://github.com/user-attachments/assets/5e9ed84f-0ff7-4dbc-89a1-05ef50d134f8" />
+
 
 Benchmark results are measurements from the current machine and provider
 accounts. Failed runs remain visible in the raw results and are not replaced by
