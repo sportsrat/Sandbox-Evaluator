@@ -74,7 +74,7 @@ def inline_images(html: str) -> str:
 
 
 def main() -> None:
-    body = markdown.markdown(SRC.read_text(), extensions=['tables', 'fenced_code', 'sane_lists'])
+    body = markdown.markdown(SRC.read_text(encoding='utf-8'), extensions=['tables', 'fenced_code', 'sane_lists'])
     body = inline_images(body)
     html = (
         '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
@@ -85,7 +85,7 @@ def main() -> None:
         '<div class="footer">Generated from <code>REPORT.md</code> · charts embedded as base64 · self-contained.</div>\n'
         '</div>\n</body>\n</html>\n'
     )
-    OUT.write_text(html)
+    OUT.write_text(html, encoding='utf-8')
     print(f'[done] wrote {OUT}  ({OUT.stat().st_size / 1024:.0f} KB, self-contained)')
 
 

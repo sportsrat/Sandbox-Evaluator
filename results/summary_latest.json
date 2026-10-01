@@ -1,0 +1,42 @@
+{
+  "e2b": {
+    "b01_boot_ready_p50_ms": 906.0000000172295,
+    "b01_create_min_ms": 391.00000000325963,
+    "b01_create_max_ms": 2016.0000000032596,
+    "b02_ops_per_s": 3.44,
+    "b02_exec_p50_ms": 266,
+    "b03_10mb_write_mbs": 2.79,
+    "b03_10mb_read_mbs": 22.36,
+    "b04_n5_success": 100,
+    "b04_n5_wall_s": 2.7,
+    "b04_n20_success": 100,
+    "b04_n20_wall_s": 3.5,
+    "b04_n50_success": 40,
+    "b04_n50_wall_s": 3.8,
+    "b05_success": 100,
+    "b06_pings": "15/15"
+  },
+  "hf": {
+    "b02_ops_per_s": 0,
+    "b02_exec_p50_ms": 0,
+    "b05_success": 0,
+    "b06_pings": "?/?"
+  },
+  "docker": {
+    "b01_boot_ready_p50_ms": 625.0,
+    "b01_create_min_ms": 483.99999999674037,
+    "b01_create_max_ms": 921.9999999622814,
+    "b02_ops_per_s": 12.07,
+    "b02_exec_p50_ms": 78,
+    "b03_10mb_write_mbs": 20.36,
+    "b03_10mb_read_mbs": 83.89,
+    "b04_n5_success": 100,
+    "b04_n5_wall_s": 6.9,
+    "b04_n20_success": 100,
+    "b04_n20_wall_s": 10.2,
+    "b04_n50_success": 100,
+    "b04_n50_wall_s": 14.1,
+    "b05_success": 100,
+    "b06_pings": "15/15"
+  }
+}

@@ -34,7 +34,7 @@ def main() -> None:
             print(f'  {label:>5}  rep={k + 1}/{args.repeats}  write={wr.elapsed_ms:.0f}ms  read={rd.elapsed_ms:.0f}ms  ok={ok}')
         w_med = sorted(write_lat)[len(write_lat) // 2] if write_lat else float('nan')
         r_med = sorted(read_lat)[len(read_lat) // 2] if read_lat else float('nan')
-        rows.append({'size_label': label, 'size_bytes': nbytes, 'write_ms': stats(write_lat), 'read_ms': stats(read_lat), 'write_mb_per_s': nbytes / 1000000.0 / (w_med / 1000.0) if write_lat else 0, 'read_mb_per_s': nbytes / 1000000.0 / (r_med / 1000.0) if read_lat else 0})
+        rows.append({'size_label': label, 'size_bytes': nbytes, 'write_ms': stats(write_lat), 'read_ms': stats(read_lat), 'write_mb_per_s': nbytes / 1000000.0 / (max(w_med, 0.001) / 1000.0) if write_lat else 0, 'read_mb_per_s': nbytes / 1000000.0 / (max(r_med, 0.001) / 1000.0) if read_lat else 0})
     cost_est = a.estimated_cost_usd()
     a.terminate()
     summary = {'bench': BENCH, 'provider': args.provider, 'cost_usd_est': cost_est, 'rows': rows}
