@@ -1,25 +1,25 @@
-# E2B vs Docker Sandbox Benchmark Report
+# E2B vs hf-sandbox vs Docker Sandbox Benchmark Report
 
 **Date:** 2026-10-01  
 **Fresh providers:** E2B and Docker  
-**Historical reference:** Hugging Face values are retained from the previous report and were not rerun.
+**Historical provider:** hf-sandbox PR #7 values are retained from the previous report and were not rerun.
 
 ## Executive summary
 
-This report reruns the provider-neutral sandbox tests that work directly through the local adapter interface. No MCP server, MCP tool, or MCP-specific transport was used.
+This report reruns the provider-neutral sandbox tests that work directly through the local adapter interface. E2B and Docker are fresh measurements; hf-sandbox is preserved from the earlier PR #7 report because its account credits are exhausted.
 
-| Dimension | E2B | Docker | Result |
-|---|---:|---:|---|
-| Cold boot to first command, p50 | 906 ms | 625 ms | Docker |
-| Warm exec throughput | 3.44 ops/s | 12.07 ops/s | Docker |
-| Warm exec latency, p50 | 266 ms | 78 ms | Docker |
-| 10 MB write | 2.79 MB/s | 20.36 MB/s | Docker |
-| 10 MB read | 22.36 MB/s | 83.89 MB/s | Docker |
-| Concurrent create, N=20 | 20/20, 3.5 s | 20/20, 10.2 s | E2B |
-| Concurrent create, N=50 | 20/50, quota | 50/50, 14.1 s | Docker |
-| Concurrent exec, N=10 | 200/200 | 200/200 | Tie |
-| Five-minute stability | 15/15 | 15/15 | Tie |
-| Max-provision ramp | Quota at N=50 | 50/50 at N=50 | Docker in this run |
+| Dimension | E2B | hf-sandbox (historical) | Docker | Result |
+|---|---:|---:|---:|---|
+| Cold boot to first command, p50 | 906 ms | 15,965 ms | 625 ms | Docker |
+| Warm exec throughput | 3.44 ops/s | 8.4 ops/s | 12.07 ops/s | Docker |
+| Warm exec latency, p50 | 266 ms | 116 ms | 78 ms | Docker |
+| 10 MB write | 2.79 MB/s | 10.05 MB/s | 20.36 MB/s | Docker |
+| 10 MB read | 22.36 MB/s | 4.30 MB/s | 83.89 MB/s | Docker |
+| Concurrent create, N=20 | 20/20, 2.2 s | 20/20 | 20/20, 10.2 s | E2B |
+| Concurrent create, N=50 | 20/50, quota | 50/50, 191 s | 50/50, 14.1 s | Docker |
+| Concurrent exec, N=10 | 200/200 | 200/200 | 200/200 | Tie |
+| Five-minute stability | 15/15 | 15/15 | 15/15 | Tie |
+| Max-provision ramp | Quota at N=50 | ~200 at 100% | 50/50 at N=50 | Docker in this run |
 
 ### Bottom line
 
@@ -99,11 +99,11 @@ All Docker payload checks passed. E2B reported successful 10 MB readback, but so
 
 The E2B N=50 result is an account quota observation, not evidence that the E2B service cannot scale to 50. A higher-quota account or a later run is needed to measure that ceiling.
 
-## Historical Hugging Face reference
+## Historical hf-sandbox PR #7
 
-These values are copied from the previous report and intentionally left intact; no Hugging Face calls were made in this refresh because the account has no pre-paid Jobs credit.
+These values are copied from the previous report and intentionally left intact; no hf-sandbox calls were made in this refresh because the account has no pre-paid Jobs credit. This section covers only the Python hf-sandbox provider through the HF Jobs proxy introduced by PR #7.
 
-| Dimension | Historical HF value |
+| Dimension | Historical hf-sandbox value |
 |---|---:|
 | Cold boot to ready p50 | 15,965 ms |
 | Warm exec throughput | 8.4 ops/s |
@@ -115,7 +115,35 @@ These values are copied from the previous report and intentionally left intact; 
 | Concurrent exec N=10 | 10/10 |
 | Five-minute stability | 15/15 |
 
-The historical HF figures are not directly same-day measurements with the fresh E2B/Docker rows. They are included for continuity only.
+### Historical methodology
+
+- **B01:** five cold create plus first-command lifecycles.
+- **B02:** 100 sequential warm `echo` operations.
+- **B03:** file I/O at 1 KB, 64 KB, 1 MB, and 10 MB.
+- **B04:** concurrent create at N=5, 20, and 50.
+- **B05:** ten sandboxes with 20 operations each.
+- **B06:** 15 pings over five minutes.
+- **B07:** concurrent provisioning ramp; approximately 200 concurrent sandboxes
+	reached 100% success, with scheduler timeouts appearing at higher fan-out.
+
+### Historical detailed results
+
+| Benchmark | hf-sandbox PR #7 result |
+|---|---:|
+| B01 create p50 | 15,827 ms |
+| B01 ready p50 | 15,965 ms |
+| B02 throughput | 8.4 ops/s |
+| B02 exec p50 / p99 | 116 ms / 171 ms |
+| B03 10 MB write / read | 10.05 / 4.30 MB/s |
+| B04 N=5 / N=20 / N=50 | 100% / 100% / 100% |
+| B04 N=50 wall time | 191.2 s |
+| B05 concurrent exec | 10/10 sandboxes, 200/200 operations |
+| B06 stability | 15/15 pings |
+| B07 reliable concurrency | approximately 200 at 100% |
+
+PR #7 removed the in-container Cloudflare tunnel and routed sandbox traffic
+through the HF Jobs proxy. The earlier N=50 tunnel failure cliff was absent in
+the preserved run; the remaining limitation was scheduler-wave boot latency.
 
 ## Reproduction commands
 

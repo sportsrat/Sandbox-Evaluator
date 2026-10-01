@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SandboxBench — E2B vs Hugging Face vs Docker</title>
+<title>SandboxBench — E2B vs hf-sandbox vs Docker</title>
 <style>
   :root {
     --bg: #0e1116; --panel: #161b22; --panel2: #1e242c; --border: #2c333d;
@@ -52,17 +52,18 @@
 </head>
 <body>
 <div class="wrap">
-<h1>E2B vs Docker Sandbox Benchmark Report</h1>
-<p><strong>Date:</strong> 2026-10-01<br />
+<h1>E2B vs hf-sandbox vs Docker Sandbox Benchmark Report</h1>
+<p><strong>Recent most test:</strong> 2026-10-01<br />
 <strong>Fresh providers:</strong> E2B and Docker<br />
-<strong>Historical reference:</strong> Hugging Face values are retained from the previous report and were not rerun.</p>
+<strong>Historical provider:</strong> hf-sandbox PR #7 values are retained from the previous report and were not rerun.</p>
 <h2>Executive summary</h2>
-<p>This report reruns the provider-neutral sandbox tests that work directly through the local adapter interface. No MCP server, MCP tool, or MCP-specific transport was used.</p>
+<p>This report reruns the provider-neutral sandbox tests that work directly through the local adapter interface. E2B and Docker are fresh measurements; hf-sandbox is preserved from the earlier PR #7 report because its account credits are exhausted.</p>
 <table>
 <thead>
 <tr>
 <th>Dimension</th>
 <th style="text-align: right;">E2B</th>
+<th style="text-align: right;">hf-sandbox (historical)</th>
 <th style="text-align: right;">Docker</th>
 <th>Result</th>
 </tr>
@@ -71,47 +72,55 @@
 <tr>
 <td>Cold boot to first command, p50</td>
 <td style="text-align: right;">906 ms</td>
+<td style="text-align: right;">15,965 ms</td>
 <td style="text-align: right;">625 ms</td>
 <td>Docker</td>
 </tr>
 <tr>
 <td>Warm exec throughput</td>
 <td style="text-align: right;">3.44 ops/s</td>
+<td style="text-align: right;">8.4 ops/s</td>
 <td style="text-align: right;">12.07 ops/s</td>
 <td>Docker</td>
 </tr>
 <tr>
 <td>Warm exec latency, p50</td>
 <td style="text-align: right;">266 ms</td>
+<td style="text-align: right;">116 ms</td>
 <td style="text-align: right;">78 ms</td>
 <td>Docker</td>
 </tr>
 <tr>
 <td>10 MB write</td>
 <td style="text-align: right;">2.79 MB/s</td>
+<td style="text-align: right;">10.05 MB/s</td>
 <td style="text-align: right;">20.36 MB/s</td>
 <td>Docker</td>
 </tr>
 <tr>
 <td>10 MB read</td>
 <td style="text-align: right;">22.36 MB/s</td>
+<td style="text-align: right;">4.30 MB/s</td>
 <td style="text-align: right;">83.89 MB/s</td>
 <td>Docker</td>
 </tr>
 <tr>
 <td>Concurrent create, N=20</td>
-<td style="text-align: right;">20/20, 3.5 s</td>
+<td style="text-align: right;">20/20, 2.2 s</td>
+<td style="text-align: right;">20/20</td>
 <td style="text-align: right;">20/20, 10.2 s</td>
 <td>E2B</td>
 </tr>
 <tr>
 <td>Concurrent create, N=50</td>
 <td style="text-align: right;">20/50, quota</td>
+<td style="text-align: right;">50/50, 191 s</td>
 <td style="text-align: right;">50/50, 14.1 s</td>
 <td>Docker</td>
 </tr>
 <tr>
 <td>Concurrent exec, N=10</td>
+<td style="text-align: right;">200/200</td>
 <td style="text-align: right;">200/200</td>
 <td style="text-align: right;">200/200</td>
 <td>Tie</td>
@@ -120,11 +129,13 @@
 <td>Five-minute stability</td>
 <td style="text-align: right;">15/15</td>
 <td style="text-align: right;">15/15</td>
+<td style="text-align: right;">15/15</td>
 <td>Tie</td>
 </tr>
 <tr>
 <td>Max-provision ramp</td>
 <td style="text-align: right;">Quota at N=50</td>
+<td style="text-align: right;">~200 at 100%</td>
 <td style="text-align: right;">50/50 at N=50</td>
 <td>Docker in this run</td>
 </tr>
@@ -326,13 +337,13 @@
 </tbody>
 </table>
 <p>The E2B N=50 result is an account quota observation, not evidence that the E2B service cannot scale to 50. A higher-quota account or a later run is needed to measure that ceiling.</p>
-<h2>Historical Hugging Face reference</h2>
-<p>These values are copied from the previous report and intentionally left intact; no Hugging Face calls were made in this refresh because the account has no pre-paid Jobs credit.</p>
+<h2>Historical hf-sandbox PR #7</h2>
+<p>These values are copied from the previous report and intentionally left intact; no hf-sandbox calls were made in this refresh because the account has no pre-paid Jobs credit. This section covers only the Python hf-sandbox provider through the HF Jobs proxy introduced by PR #7.</p>
 <table>
 <thead>
 <tr>
 <th>Dimension</th>
-<th style="text-align: right;">Historical HF value</th>
+<th style="text-align: right;">Historical hf-sandbox value</th>
 </tr>
 </thead>
 <tbody>
@@ -374,7 +385,71 @@
 </tr>
 </tbody>
 </table>
-<p>The historical HF figures are not directly same-day measurements with the fresh E2B/Docker rows. They are included for continuity only.</p>
+<h3>Historical methodology</h3>
+<ul>
+<li><strong>B01:</strong> five cold create plus first-command lifecycles.</li>
+<li><strong>B02:</strong> 100 sequential warm <code>echo</code> operations.</li>
+<li><strong>B03:</strong> file I/O at 1 KB, 64 KB, 1 MB, and 10 MB.</li>
+<li><strong>B04:</strong> concurrent create at N=5, 20, and 50.</li>
+<li><strong>B05:</strong> ten sandboxes with 20 operations each.</li>
+<li><strong>B06:</strong> 15 pings over five minutes.</li>
+<li><strong>B07:</strong> concurrent provisioning ramp; approximately 200 concurrent sandboxes
+    reached 100% success, with scheduler timeouts appearing at higher fan-out.</li>
+</ul>
+<h3>Historical detailed results</h3>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th style="text-align: right;">hf-sandbox PR #7 result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B01 create p50</td>
+<td style="text-align: right;">15,827 ms</td>
+</tr>
+<tr>
+<td>B01 ready p50</td>
+<td style="text-align: right;">15,965 ms</td>
+</tr>
+<tr>
+<td>B02 throughput</td>
+<td style="text-align: right;">8.4 ops/s</td>
+</tr>
+<tr>
+<td>B02 exec p50 / p99</td>
+<td style="text-align: right;">116 ms / 171 ms</td>
+</tr>
+<tr>
+<td>B03 10 MB write / read</td>
+<td style="text-align: right;">10.05 / 4.30 MB/s</td>
+</tr>
+<tr>
+<td>B04 N=5 / N=20 / N=50</td>
+<td style="text-align: right;">100% / 100% / 100%</td>
+</tr>
+<tr>
+<td>B04 N=50 wall time</td>
+<td style="text-align: right;">191.2 s</td>
+</tr>
+<tr>
+<td>B05 concurrent exec</td>
+<td style="text-align: right;">10/10 sandboxes, 200/200 operations</td>
+</tr>
+<tr>
+<td>B06 stability</td>
+<td style="text-align: right;">15/15 pings</td>
+</tr>
+<tr>
+<td>B07 reliable concurrency</td>
+<td style="text-align: right;">approximately 200 at 100%</td>
+</tr>
+</tbody>
+</table>
+<p>PR #7 removed the in-container Cloudflare tunnel and routed sandbox traffic
+through the HF Jobs proxy. The earlier N=50 tunnel failure cliff was absent in
+the preserved run; the remaining limitation was scheduler-wave boot latency.</p>
 <h2>Reproduction commands</h2>
 <p>Activate the project environment first:</p>
 <pre><code class="language-powershell">.venv\Scripts\Activate.ps1

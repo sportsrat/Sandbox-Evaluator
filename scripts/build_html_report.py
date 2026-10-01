@@ -79,7 +79,7 @@ def main() -> None:
     html = (
         '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-        '<title>SandboxBench — E2B vs Hugging Face vs Docker</title>\n'
+        '<title>SandboxBench — E2B vs hf-sandbox vs Docker</title>\n'
         f'<style>{CSS}</style>\n</head>\n<body>\n<div class="wrap">\n'
         f'{body}\n'
         '<div class="footer">Generated from <code>REPORT.md</code> · charts embedded as base64 · self-contained.</div>\n'
