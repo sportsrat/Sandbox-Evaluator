@@ -2,8 +2,6 @@
 
 **Date:** 2026-10-01  
 **Fresh providers:** E2B and Docker  
-**Historical provider:** hf-sandbox PR #7 values are retained from the previous report and were not rerun.
-
 ## Executive summary
 
 This report reruns the provider-neutral sandbox tests that work directly through the local adapter interface. E2B and Docker are fresh measurements; hf-sandbox is preserved from the earlier PR #7 report because its account credits are exhausted.
